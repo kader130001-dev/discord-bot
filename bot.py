@@ -61,6 +61,24 @@ async def lock(ctx):
 @commands.has_permissions(manage_channels=True)
 async def unlock(ctx):
     await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=True)
-    await ctx.send("Les membres peuvent à nouveau parler 🔓")
+    await ctx.send("Les membres peuvent à nouveau parler 🔓")@bot.command()
+@commands.has_permissions(manage_roles=True)
+async def derank(ctx, member: discord.Member):
+    roles = [role for role in member.roles if role != ctx.guild.default_role]
+    await member.remove_roles(*roles)
+    await ctx.send(f"✅ Tous les rôles de {member.mention} ont été retirés.")
+
+@bot.command()
+async def help(ctx):
+    embed = discord.Embed(title="📋 Commandes disponibles", color=0x00bfff)
+    embed.add_field(name="+ping", value="Voir la latence du bot", inline=False)
+    embed.add_field(name="+lock", value="Verrouiller le salon", inline=False)
+    embed.add_field(name="+unlock", value="Déverrouiller le salon", inline=False)
+    embed.add_field(name="+userinfo [@membre]", value="Voir les infos d'un membre", inline=False)
+    embed.add_field(name="+derank [@membre]", value="Retirer tous les rôles d'un membre", inline=False)
+    embed.add_field(name="+help", value="Voir les commandes disponibles", inline=False)
+    embed.set_footer(text="Préfixe : +")
+    await ctx.send(embed=embed)
 bot.run(os.environ["TOKEN"])
+
 
