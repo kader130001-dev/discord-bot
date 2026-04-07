@@ -110,5 +110,16 @@ async def renew(ctx):
     await channel.delete()
     await new_channel.send("✅ Salon renouvelé !")
 
+@bot.command()
+@commands.has_permissions(ban_members=True)
+async def banlist(ctx):
+    bans = [entry async for entry in ctx.guild.bans()]
+    if not bans:
+        await ctx.send("✅ Aucun membre banni sur ce serveur !")
+        return
+    liste = "\n".join([f"🔨 {entry.user} (ID: {entry.user.id})" for entry in bans])
+    embed = discord.Embed(title="📋 Liste des bannis", description=liste, color=0xff0000)
+    await ctx.send(embed=embed)
+
 bot.run(os.environ["TOKEN"])
 
