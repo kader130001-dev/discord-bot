@@ -98,5 +98,5 @@ async def commandes(ctx):
     embed.add_field(name="+help", value="Voir les commandes disponibles", inline=False)
     embed.set_footer(text="Préfixe : +")
     await ctx.send(embed=embed)
-    bot.run(os.environ["TOKEN"])
+bot.run(os.environ["TOKEN"])
 
