@@ -80,7 +80,7 @@ async def commandes(ctx):
     embed.add_field(name="+help", value="Voir les commandes disponibles", inline=False)
     embed.set_footer(text="Préfixe : +")
     await ctx.send(embed=embed)
-    @bot.command() 
+    @bot.command()
     @commands.has_permissions(administrator=True)
 async def backup(ctx):
     guild = ctx.guild
