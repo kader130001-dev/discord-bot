@@ -98,5 +98,17 @@ async def commandes(ctx):
     embed.add_field(name="+help", value="Voir les commandes disponibles", inline=False)
     embed.set_footer(text="Préfixe : +")
     await ctx.send(embed=embed)
+@bot.command()
+    
+@commands.has_permissions(manage_channels=True)
+async def renew(ctx):
+    channel = ctx.channel
+    position = channel.position
+    overwrites = channel.overwrites
+    new_channel = await channel.clone(reason="Renew par commande")
+    await new_channel.edit(position=position, overwrites=overwrites)
+    await channel.delete()
+    await new_channel.send("✅ Salon renouvelé !")
+
 bot.run(os.environ["TOKEN"])
 
