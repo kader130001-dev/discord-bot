@@ -120,6 +120,31 @@ async def banlist(ctx):
     liste = "\n".join([f"🔨 {entry.user} (ID: {entry.user.id})" for entry in bans])
     embed = discord.Embed(title="📋 Liste des bannis", description=liste, color=0xff0000)
     await ctx.send(embed=embed)
+class TicketSelect(discord.ui.Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="Questions Serveur", description="Si vous avez une question concernant le serveur.", emoji="⚖️"),
+            discord.SelectOption(label="Gestion Staff", description="Devenir staff, réclamer un rankup ou récupérer des rôles.", emoji="👥"),
+            discord.SelectOption(label="Gestion Abus", description="En cas de conflit ou problème avec un staff/membre.", emoji="🕵️"),
+            discord.SelectOption(label="Gestion Coins", description="En cas de problème du bot coins.", emoji="🪙"),
+            discord.SelectOption(label="Gestion Animation", description="Devenir animateur.", emoji="🎭"),
+            discord.SelectOption(label="Community Manager", description="Contacter les community managers.", emoji="💻"),
+        ]
+        super().__init__(placeholder="Veuillez faire un choix.", options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f"✅ Ticket **{self.values[0]}** créé !", ephemeral=True)
+
+class TicketView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_item(TicketSelect())
+
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def embed(ctx):
+    embed = discord.Embed(title="🎫 Support", description="Veuillez faire un choix.", color=0x2b2d31)
+    await ctx.send(embed=embed, view=TicketView())
 
 bot.run(os.environ["TOKEN"])
 
