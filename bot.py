@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+import os
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
@@ -36,6 +36,16 @@ async def delrole(ctx, member: discord.Member, role: discord.Role):
 async def clear(ctx, amount: int):
     await ctx.channel.purge(limit=amount)
     await ctx.send(f"{amount} messages supprimes !", delete_after=3)
-import os
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def hide(ctx):
+    await ctx.channel.set_permissions(ctx.guild.default_role, view_channel=False)
+    await ctx.send("Salon caché !")
+
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def unhide(ctx):
+    await ctx.channel.set_permissions(ctx.guild.default_role, view_channel=True)
+    await ctx.send("Salon visible !")
 bot.run(os.environ["TOKEN"])
 
