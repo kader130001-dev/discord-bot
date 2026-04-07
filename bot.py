@@ -67,8 +67,8 @@ async def unlock(ctx):
 @commands.has_permissions(manage_roles=True)
 async def derank(ctx, member: discord.Member):
     roles = [role for role in member.roles if role != ctx.guild.default_role]
-    await member.remove_roles(*roles)
-    await ctx.send(f"{member.mention} a été derank !")
+            await member.remove_roles(*roles)
+        await ctx.send(f"{member.mention} a été derank !")
     
 @bot.command()
 async def commandes(ctx):
