@@ -71,7 +71,7 @@ async def derank(ctx, member: discord.Member):
     await ctx.send(f"✅ Tous les rôles de {member.mention} ont été retirés.")
 
 @bot.command()
-async def help(ctx):
+async def commandes(ctx):
     embed = discord.Embed(title="📋 Commandes disponibles", color=0x00bfff)
     embed.add_field(name="+ping", value="Voir la latence du bot", inline=False)
     embed.add_field(name="+lock", value="Verrouiller le salon", inline=False)
