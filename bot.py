@@ -47,5 +47,20 @@ async def hide(ctx):
 async def unhide(ctx):
     await ctx.channel.set_permissions(ctx.guild.default_role, view_channel=True)
     await ctx.send("Salon visible !")
+@bot.command()
+async def ping(ctx):
+    await ctx.send(f"Pong ! 🏓 {round(bot.latency * 1000)}ms")
+
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def lock(ctx):
+    await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=False)
+    await ctx.send("Salon verrouillé 🔒")
+
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def unlock(ctx):
+    await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=True)
+    await ctx.send("Salon déverrouillé 🔓")
 bot.run(os.environ["TOKEN"])
 
