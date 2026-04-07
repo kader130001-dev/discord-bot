@@ -40,13 +40,13 @@ async def clear(ctx, amount: int):
 @commands.has_permissions(manage_channels=True)
 async def hide(ctx):
     await ctx.channel.set_permissions(ctx.guild.default_role, view_channel=False)
-    await ctx.send("Salon caché !")
+    await ctx.send("Les membres ne voyent plus ce salon !")
 
 @bot.command()
 @commands.has_permissions(manage_channels=True)
 async def unhide(ctx):
     await ctx.channel.set_permissions(ctx.guild.default_role, view_channel=True)
-    await ctx.send("Salon visible !")
+    await ctx.send("Les membres voyent à nouveau ce salon !")
 @bot.command()
 async def ping(ctx):
     await ctx.send(f"Pong ! 🏓 {round(bot.latency * 1000)}ms")
