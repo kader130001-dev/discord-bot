@@ -62,6 +62,7 @@ async def lock(ctx):
 async def unlock(ctx):
     await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=True)
     await ctx.send("Les membres peuvent à nouveau parler 🔓")
+    
 @bot.command()
 @commands.has_permissions(manage_roles=True)
 async def derank(ctx, member: discord.Member):
