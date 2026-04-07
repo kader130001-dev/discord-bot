@@ -145,6 +145,25 @@ class TicketView(discord.ui.View):
 async def embed(ctx):
     embed = discord.Embed(title="🎫 Support", description="Veuillez faire un choix.", color=0x2b2d31)
     await ctx.send(embed=embed, view=TicketView())
+    
+@bot.command()
+async def serverinfo(ctx):
+    guild = ctx.guild
+    embed = discord.Embed(
+        title=f"🌸 {guild.name}",
+        description="━━━━━━━━━━━━━━━━━━━━━",
+        color=0xc8c8c8
+    )
+    embed.set_thumbnail(url=guild.icon.url if guild.icon else "")
+    embed.add_field(name="👑 Propriétaire", value=guild.owner.mention, inline=True)
+    embed.add_field(name="👥 Membres", value=f"`{guild.member_count}`", inline=True)
+    embed.add_field(name="📅 Création", value=f"`{guild.created_at.strftime('%d/%m/%Y')}`", inline=True)
+    embed.add_field(name="💬 Salons", value=f"`{len(guild.channels)}`", inline=True)
+    embed.add_field(name="🎭 Rôles", value=f"`{len(guild.roles)}`", inline=True)
+    embed.add_field(name="😀 Emojis", value=f"`{len(guild.emojis)}`", inline=True)
+    embed.set_image(url="https://media1.tenor.com/m/Q1Hm4RwLv0AAAAAC/sakura.gif")
+    embed.set_footer(text="━━━━━━━━━━━━━━━━━━━━━")
+    await ctx.send(embed=embed)
 
 bot.run(os.environ["TOKEN"])
 
