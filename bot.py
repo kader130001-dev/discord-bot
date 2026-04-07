@@ -55,12 +55,12 @@ async def ping(ctx):
 @commands.has_permissions(manage_channels=True)
 async def lock(ctx):
     await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=False)
-    await ctx.send("Salon verrouillé 🔒")
+    await ctx.send("Les membres ne peuvent plus parler 🔒")
 
 @bot.command()
 @commands.has_permissions(manage_channels=True)
 async def unlock(ctx):
     await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=True)
-    await ctx.send("Salon déverrouillé 🔓")
+    await ctx.send("Les membres peuvent à nouveau parler 🔓")
 bot.run(os.environ["TOKEN"])
 
