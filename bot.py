@@ -81,29 +81,19 @@ async def commandes(ctx):
     embed.set_footer(text="Préfixe : +")
     await ctx.send(embed=embed)
     @bot.command()
-    @commands.has_permissions(administrator=True)
+@commands.has_permissions(administrator=True)
 async def backup(ctx):
     guild = ctx.guild
     backup_data = {"salons": [], "roles": []}
-    
     for role in guild.roles:
         if role.name != "@everyone":
-            backup_data["roles"].append({
-                "name": role.name,
-                "color": role.color.value,
-                "permissions": role.permissions.value
-            })
-    
+            backup_data["roles"].append({"name": role.name, "color": role.color.value, "permissions": role.permissions.value})
     for channel in guild.channels:
-        backup_data["salons"].append({
-            "name": channel.name,
-            "type": str(channel.type)
-        })
-    
+        backup_data["salons"].append({"name": channel.name, "type": str(channel.type)})
     import json
     data_str = json.dumps(backup_data)
     await ctx.author.send(f"**Backup ID:**\n```{data_str}```")
-    await ctx.send("✅ Backup envoyé en MP ! Garde le code pour +restore")
+    await ctx.send("Backup envoye en MP !")
 
 @bot.command()
 @commands.has_permissions(administrator=True)
@@ -111,21 +101,11 @@ async def restore(ctx, *, data: str):
     import json
     guild = ctx.guild
     backup_data = json.loads(data)
-    
     for role_data in backup_data["roles"]:
-        await guild.create_role(
-            name=role_data["name"],
-            colour=discord.Colour(role_data["color"]),
-            permissions=discord.Permissions(role_data["permissions"])
-        )
-    
+        await guild.create_role(name=role_data["name"], colour=discord.Colour(role_data["color"]), permissions=discord.Permissions(role_data["permissions"]))
     for channel_data in backup_data["salons"]:
         if channel_data["type"] == "text":
             await guild.create_text_channel(channel_data["name"])
         elif channel_data["type"] == "voice":
             await guild.create_voice_channel(channel_data["name"])
-    
-    await ctx.send("✅ Restore terminé !")
-bot.run(os.environ["TOKEN"])
-
-
+    await ctx.send("Restore termine !")
