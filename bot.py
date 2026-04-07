@@ -36,6 +36,6 @@ async def delrole(ctx, member: discord.Member, role: discord.Role):
 async def clear(ctx, amount: int):
     await ctx.channel.purge(limit=amount)
     await ctx.send(f"{amount} messages supprimes !", delete_after=3)
-
-bot.run("MTQ5MDg5MDMxMjYyMzU5MTUwNA.GqX7w7.z-6-D7Ov9HKnr7wh7UJgyLTAaGgl2bcgv-t_Xk")
+import os
+bot.run(os.environ["TOKEN"])
 
