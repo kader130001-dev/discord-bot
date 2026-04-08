@@ -114,7 +114,6 @@ async def renew(ctx):
     new_channel = await channel.clone(reason="Renew par commande")
     await new_channel.edit(position=position, overwrites=overwrites)
     await channel.delete()
-    await new_channel.send("✅ Salon renouvelé !")
 
 @bot.command()
 @commands.has_permissions(ban_members=True)
