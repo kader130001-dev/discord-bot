@@ -275,5 +275,28 @@ async def warnlist(ctx, member: discord.Member):
     embed.set_footer(text=f"Total : {len(warns)} warn(s)")
     await ctx.send(embed=embed)
     
+  @bot.command()
+@commands.has_permissions(moderate_members=True)
+async def unwarn(ctx, member: discord.Member):
+    warns = warn_data.get(member.id, [])
+    if not warns:
+        await ctx.send(f"✅ **{member}** n'a aucun avertissement !")
+        return
+    warn_data[member.id].pop()
+    embed = discord.Embed(title="✅ Avertissement retiré", color=0x44ff44)
+    embed.add_field(name="👤 Membre", value=member.mention, inline=True)
+    embed.add_field(name="🔢 Warns restants", value=f"`{len(warn_data[member.id])}`", inline=True)
+    embed.set_footer(text=f"Par {ctx.author}")
+    await ctx.send(embed=embed)
+
+@bot.command()
+@commands.has_permissions(moderate_members=True)
+async def unwarnall(ctx, member: discord.Member):
+    warn_data[member.id] = []
+    embed = discord.Embed(title="✅ Tous les avertissements retirés", color=0x44ff44)
+    embed.add_field(name="👤 Membre", value=member.mention, inline=True)
+    embed.set_footer(text=f"Par {ctx.author}")
+    await ctx.send(embed=embed)
+    
 bot.run(os.environ["TOKEN"])
 
