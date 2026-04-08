@@ -179,5 +179,13 @@ async def unban(ctx, user_id: int):
     except discord.Forbidden:
         await ctx.send("❌ Je n'ai pas la permission de débannir cet utilisateur !")
 
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+    if bot.user.mentioned_in(message) and not message.mention_everyone:
+        await message.reply("Mon préfixe est **+** !")
+    await bot.process_commands(message)
+    
 bot.run(os.environ["TOKEN"])
 
