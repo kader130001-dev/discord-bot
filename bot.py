@@ -189,10 +189,12 @@ async def on_message(message):
     
     snipe_data = {}
 
-@bot.event
+@bot.listen()
 async def on_message_delete(message):
+    if message.author.bot:
+        return
     snipe_data[message.channel.id] = {
-        "content": message.content,
+        "content": message.content if message.content else "*(image/fichier)*",
         "author": message.author,
         "time": message.created_at
     }
