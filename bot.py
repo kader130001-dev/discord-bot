@@ -228,17 +228,28 @@ warn_data = {}
 
 @bot.command()
 @commands.has_permissions(moderate_members=True)
-async def mute(ctx, member: discord.Member, *, reason=None):
+async def mute(ctx, member: discord.Member, duree: str, *, reason=None):
     import datetime
-    duration = datetime.timedelta(hours=1)
+    units = {"s": 1, "m": 60, "h": 3600, "j": 86400}
+    unit = duree[-1]
+    if unit not in units:
+        await ctx.send("❌ Format invalide ! Exemple : `+mute @membre 10m raison`\n⏱️ Unités : `s` secondes, `m` minutes, `h` heures, `j` jours")
+        return
+    try:
+        amount = int(duree[:-1])
+    except:
+        await ctx.send("❌ Format invalide ! Exemple : `+mute @membre 10m raison`")
+        return
+    seconds = amount * units[unit]
+    duration = datetime.timedelta(seconds=seconds)
     await member.timeout(duration, reason=reason)
     embed = discord.Embed(title="🔇 Membre muet", color=0xff4444)
     embed.add_field(name="👤 Membre", value=member.mention, inline=True)
-    embed.add_field(name="⏱️ Durée", value="1 heure", inline=True)
+    embed.add_field(name="⏱️ Durée", value=duree, inline=True)
     embed.add_field(name="📝 Raison", value=reason or "Aucune", inline=False)
     embed.set_footer(text=f"Par {ctx.author}")
     await ctx.send(embed=embed)
-
+    
 @bot.command()
 @commands.has_permissions(moderate_members=True)
 async def unmute(ctx, member: discord.Member):
@@ -275,7 +286,7 @@ async def warnlist(ctx, member: discord.Member):
     embed.set_footer(text=f"Total : {len(warns)} warn(s)")
     await ctx.send(embed=embed)
     
-  @bot.command()
+@bot.command()
 @commands.has_permissions(moderate_members=True)
 async def unwarn(ctx, member: discord.Member):
     warns = warn_data.get(member.id, [])
