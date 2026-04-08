@@ -187,7 +187,7 @@ async def on_message(message):
         await message.reply("Mon préfixe est **+** !")
     await bot.process_commands(message)
     
-    snipe_data = {}
+snipe_data = {}
 
 @bot.listen()
 async def on_message_delete(message):
