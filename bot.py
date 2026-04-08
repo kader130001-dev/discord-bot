@@ -32,10 +32,16 @@ async def kick(ctx, member: discord.Member, *, reason=None):
 
 @bot.command()
 @commands.has_permissions(ban_members=True)
-async def ban(ctx, member: discord.Member, *, reason=None):
-    await member.ban(reason=reason)
-    await ctx.send(f"{member} a ete banni !")
-
+async def ban(ctx, user_id: int, *, reason=None):
+    try:
+        user = await bot.fetch_user(user_id)
+        await ctx.guild.ban(user, reason=reason)
+        await ctx.send(f"🔨 {user} a été banni ! Raison : {reason or 'Aucune'}")
+    except discord.NotFound:
+        await ctx.send("❌ Utilisateur introuvable !")
+    except discord.Forbidden:
+        await ctx.send("❌ Je n'ai pas la permission de bannir cet utilisateur !")
+        
 @bot.command()
 @commands.has_permissions(manage_roles=True)
 async def addrole(ctx, member: discord.Member, role: discord.Role):
