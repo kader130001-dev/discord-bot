@@ -234,7 +234,7 @@ async def mute(ctx, member: discord.Member, duree: str, *, reason=None):
     units = {"s": 1, "m": 60, "h": 3600, "j": 86400}
     unit = duree[-1]
     if unit not in units:
-        await ctx.send("❌ Format invalide ! Exemple : `+mute @membre 10m raison`\n⏱️ Unités : `s` secondes, `m` minutes, `h` heures, `j` jours")
+        await ctx.send("❌ Format invalide ! Exemple : `+mute @membre 10m raison`")
         return
     try:
         amount = int(duree[:-1])
@@ -244,21 +244,13 @@ async def mute(ctx, member: discord.Member, duree: str, *, reason=None):
     seconds = amount * units[unit]
     duration = datetime.timedelta(seconds=seconds)
     await member.timeout(duration, reason=reason)
-    embed = discord.Embed(title="🔇 Membre muet", color=0xff4444)
-    embed.add_field(name="👤 Membre", value=member.mention, inline=True)
-    embed.add_field(name="⏱️ Durée", value=duree, inline=True)
-    embed.add_field(name="📝 Raison", value=reason or "Aucune", inline=False)
-    embed.set_footer(text=f"Par {ctx.author}")
-    await ctx.send(embed=embed)
-    
+    await ctx.send(f"🔇 {member.mention} a été muté **{duree}** | Raison : {reason or 'Aucune'}")
+
 @bot.command()
 @commands.has_permissions(moderate_members=True)
 async def unmute(ctx, member: discord.Member):
     await member.timeout(None)
-    embed = discord.Embed(title="🔊 Membre unmute", color=0x44ff44)
-    embed.add_field(name="👤 Membre", value=member.mention, inline=True)
-    embed.set_footer(text=f"Par {ctx.author}")
-    await ctx.send(embed=embed)
+    await ctx.send(f"🔊 {member.mention} a été unmute !")
 
 @bot.command()
 @commands.has_permissions(moderate_members=True)
