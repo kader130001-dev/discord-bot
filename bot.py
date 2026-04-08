@@ -187,5 +187,30 @@ async def on_message(message):
         await message.reply("Mon préfixe est **+** !")
     await bot.process_commands(message)
     
+    snipe_data = {}
+
+@bot.event
+async def on_message_delete(message):
+    snipe_data[message.channel.id] = {
+        "content": message.content,
+        "author": message.author,
+        "time": message.created_at
+    }
+
+@bot.command()
+async def snipe(ctx):
+    data = snipe_data.get(ctx.channel.id)
+    if not data:
+        await ctx.send("❌ Aucun message supprimé récemment !")
+        return
+    embed = discord.Embed(
+        description=data["content"],
+        color=0x2b2d31,
+        timestamp=data["time"]
+    )
+    embed.set_author(name=data["author"], icon_url=data["author"].display_avatar.url)
+    embed.set_footer(text=f"Supprimé dans #{ctx.channel.name}")
+    await ctx.send(embed=embed)
+    
 bot.run(os.environ["TOKEN"])
 
