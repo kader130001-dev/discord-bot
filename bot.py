@@ -171,5 +171,17 @@ async def serverinfo(ctx):
     embed.set_footer(text="━━━━━━━━━━━━━━━━━━━━━")
     await ctx.send(embed=embed)
 
+@bot.command()
+@commands.has_permissions(ban_members=True)
+async def unban(ctx, user_id: int):
+    try:
+        user = await bot.fetch_user(user_id)
+        await ctx.guild.unban(user)
+        await ctx.send(f"✅ {user} a été débanni !")
+    except discord.NotFound:
+        await ctx.send("❌ Utilisateur introuvable ou pas banni !")
+    except discord.Forbidden:
+        await ctx.send("❌ Je n'ai pas la permission de débannir cet utilisateur !")
+
 bot.run(os.environ["TOKEN"])
 
