@@ -63,14 +63,22 @@ async def clear(ctx, amount: int):
 @bot.command()
 @commands.has_permissions(manage_channels=True)
 async def hide(ctx):
+    overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
+    if overwrite.view_channel == False:
+        await ctx.send("❌ Ce salon est déjà caché !")
+        return
     await ctx.channel.set_permissions(ctx.guild.default_role, view_channel=False)
-    await ctx.send("Les membres ne voyent plus ce salon !")
+    await ctx.send("🔒 Les membres ne voient plus ce salon !")
 
 @bot.command()
 @commands.has_permissions(manage_channels=True)
 async def unhide(ctx):
+    overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
+    if overwrite.view_channel == True:
+        await ctx.send("❌ Ce salon est déjà visible !")
+        return
     await ctx.channel.set_permissions(ctx.guild.default_role, view_channel=True)
-    await ctx.send("Les membres voyent à nouveau ce salon !")
+    await ctx.send("🔓 Les membres voient à nouveau ce salon !")
 @bot.command()
 async def ping(ctx):
     await ctx.send(f"Pong ! 🏓 {round(bot.latency * 1000)}ms")
