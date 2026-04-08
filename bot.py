@@ -224,5 +224,56 @@ async def snipe(ctx):
     embed.set_footer(text=f"Supprimé dans #{ctx.channel.name}")
     await ctx.send(embed=embed)
     
+warn_data = {}
+
+@bot.command()
+@commands.has_permissions(moderate_members=True)
+async def mute(ctx, member: discord.Member, *, reason=None):
+    import datetime
+    duration = datetime.timedelta(hours=1)
+    await member.timeout(duration, reason=reason)
+    embed = discord.Embed(title="🔇 Membre muet", color=0xff4444)
+    embed.add_field(name="👤 Membre", value=member.mention, inline=True)
+    embed.add_field(name="⏱️ Durée", value="1 heure", inline=True)
+    embed.add_field(name="📝 Raison", value=reason or "Aucune", inline=False)
+    embed.set_footer(text=f"Par {ctx.author}")
+    await ctx.send(embed=embed)
+
+@bot.command()
+@commands.has_permissions(moderate_members=True)
+async def unmute(ctx, member: discord.Member):
+    await member.timeout(None)
+    embed = discord.Embed(title="🔊 Membre unmute", color=0x44ff44)
+    embed.add_field(name="👤 Membre", value=member.mention, inline=True)
+    embed.set_footer(text=f"Par {ctx.author}")
+    await ctx.send(embed=embed)
+
+@bot.command()
+@commands.has_permissions(moderate_members=True)
+async def warn(ctx, member: discord.Member, *, reason=None):
+    if member.id not in warn_data:
+        warn_data[member.id] = []
+    warn_data[member.id].append(reason or "Aucune")
+    total = len(warn_data[member.id])
+    embed = discord.Embed(title="⚠️ Avertissement", color=0xffaa00)
+    embed.add_field(name="👤 Membre", value=member.mention, inline=True)
+    embed.add_field(name="🔢 Total warns", value=f"`{total}`", inline=True)
+    embed.add_field(name="📝 Raison", value=reason or "Aucune", inline=False)
+    embed.set_footer(text=f"Par {ctx.author}")
+    await ctx.send(embed=embed)
+
+@bot.command()
+@commands.has_permissions(moderate_members=True)
+async def warnlist(ctx, member: discord.Member):
+    warns = warn_data.get(member.id, [])
+    if not warns:
+        await ctx.send(f"✅ **{member}** n'a aucun avertissement !")
+        return
+    liste = "\n".join([f"`{i+1}.` {w}" for i, w in enumerate(warns)])
+    embed = discord.Embed(title=f"📋 Avertissements de {member}", description=liste, color=0xffaa00)
+    embed.set_thumbnail(url=member.display_avatar.url)
+    embed.set_footer(text=f"Total : {len(warns)} warn(s)")
+    await ctx.send(embed=embed)
+    
 bot.run(os.environ["TOKEN"])
 
