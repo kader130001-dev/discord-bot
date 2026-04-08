@@ -103,17 +103,19 @@ async def derank(ctx, member: discord.Member):
     await ctx.send(f"{member.mention} **a été derank** !")
 
 @bot.command()
-async def commandes(ctx):
-    embed = discord.Embed(title="📋 Commandes disponibles", color=0x00bfff)
-    embed.add_field(name="+ping", value="Voir la latence du bot", inline=False)
-    embed.add_field(name="+lock", value="Verrouiller le salon", inline=False)
-    embed.add_field(name="+unlock", value="Déverrouiller le salon", inline=False)
-    embed.add_field(name="+userinfo [@membre]", value="Voir les infos d'un membre", inline=False)
-    embed.add_field(name="+derank [@membre]", value="Retirer tous les rôles d'un membre", inline=False)
-    embed.add_field(name="+help", value="Voir les commandes disponibles", inline=False)
-    embed.set_footer(text="Préfixe : +")
+async def help(ctx):
+    embed = discord.Embed(
+        title="📋 Commandes disponibles",
+        description="Préfixe : **+**",
+        color=0x2b2d31
+    )
+    embed.add_field(name="🛡️ Modération", value="`+ban` `+unban` `+kick` `+derank`\n`+banlist` `+clear`", inline=False)
+    embed.add_field(name="🔒 Salons", value="`+hide` `+unhide` `+lock` `+unlock`\n`+renew`", inline=False)
+    embed.add_field(name="👥 Rôles", value="`+addrole` `+delrole`", inline=False)
+    embed.add_field(name="📊 Infos", value="`+serverinfo` `+ping` `+snipe`", inline=False)
+    embed.add_field(name="🎫 Autre", value="`+embed`", inline=False)
+    embed.set_footer(text="Tape +help <commande> pour plus d'infos")
     await ctx.send(embed=embed)
-@bot.command()
     
 @commands.has_permissions(manage_channels=True)
 async def renew(ctx):
