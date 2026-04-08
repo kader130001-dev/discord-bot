@@ -155,20 +155,16 @@ async def embed(ctx):
 @bot.command()
 async def serverinfo(ctx):
     guild = ctx.guild
-    embed = discord.Embed(
-        title=f"🌸 {guild.name}",
-        description="━━━━━━━━━━━━━━━━━━━━━",
-        color=0xc8c8c8
-    )
+    total = guild.member_count
+    online = sum(1 for m in guild.members if m.status != discord.Status.offline)
+    vocal = sum(1 for m in guild.members if m.voice)
+    streaming = sum(1 for m in guild.members if m.voice and m.voice.self_stream)
+    actifs = sum(1 for m in guild.members if m.activity)
+    mutes = sum(1 for m in guild.members if m.voice and m.voice.self_mute)
+
+    embed = discord.Embed(title=f"{guild.name} 🏰 Statistiques !", color=0x2b2d31)
     embed.set_thumbnail(url=guild.icon.url if guild.icon else "")
-    embed.add_field(name="👑 Propriétaire", value=guild.owner.mention, inline=True)
-    embed.add_field(name="👥 Membres", value=f"`{guild.member_count}`", inline=True)
-    embed.add_field(name="📅 Création", value=f"`{guild.created_at.strftime('%d/%m/%Y')}`", inline=True)
-    embed.add_field(name="💬 Salons", value=f"`{len(guild.channels)}`", inline=True)
-    embed.add_field(name="🎭 Rôles", value=f"`{len(guild.roles)}`", inline=True)
-    embed.add_field(name="😀 Emojis", value=f"`{len(guild.emojis)}`", inline=True)
-    embed.set_image(url="https://media1.tenor.com/m/Q1Hm4RwLv0AAAAAC/sakura.gif")
-    embed.set_footer(text="━━━━━━━━━━━━━━━━━━━━━")
+    embed.add_field(name="", value=f"*Membres:* **{total:,}**\n*En ligne:* **{online:,}**\n*En vocal:* **{vocal:,}**\n*En stream:* **{streaming:,}**\n*Actifs:* **{actifs:,}**\n*Mute:* **{mutes:,}**", inline=False)
     await ctx.send(embed=embed)
 
 @bot.command()
