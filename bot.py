@@ -116,7 +116,8 @@ async def help(ctx):
     embed.add_field(name="🎫 Autre", value="`+embed`", inline=False)
     embed.set_footer(text="Tape +help <commande> pour plus d'infos")
     await ctx.send(embed=embed)
-    
+
+@bot.command()   
 @commands.has_permissions(manage_channels=True)
 async def renew(ctx):
     channel = ctx.channel
