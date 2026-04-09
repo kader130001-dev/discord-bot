@@ -104,18 +104,28 @@ async def derank(ctx, member: discord.Member):
 
 @bot.command()
 async def help(ctx):
-    embed = discord.Embed(
-        title="📋 Commandes disponibles",
-        description="Préfixe : **+**",
-        color=0x2b2d31
-    )
-    embed.add_field(name="🛡️ Modération", value="`+ban` `+unban` `+kick` `+derank`\n`+banlist` `+clear`", inline=False)
-    embed.add_field(name="🔒 Salons", value="`+hide` `+unhide` `+lock` `+unlock`\n`+renew`", inline=False)
-    embed.add_field(name="👥 Rôles", value="`+addrole` `+delrole`", inline=False)
-    embed.add_field(name="📊 Infos", value="`+serverinfo` `+ping` `+snipe`", inline=False)
-    embed.add_field(name="🎫 Autre", value="`+embed`", inline=False)
-    embed.set_footer(text="Tape +help <commande> pour plus d'infos")
-    await ctx.send(embed=embed)
+    pages = [
+        discord.Embed(title="📋 Commandes disponibles", description="Préfixe : **+**", color=0x2b2d31).add_field(name="🛡️ Modération", value="`+ban` `+unban` `+kick` `+derank`\n`+banlist` `+clear` `+mute` `+unmute`", inline=False).add_field(name="⚠️ Avertissements", value="`+warn` `+warnlist` `+unwarn` `+unwarnall`", inline=False).set_footer(text="Ton Bot • Préfixe actuel : +"),
+        discord.Embed(title="📋 Commandes disponibles", description="Préfixe : **+**", color=0x2b2d31).add_field(name="🔒 Salons", value="`+hide` `+unhide` `+lock` `+unlock`\n`+renew`", inline=False).add_field(name="👥 Rôles", value="`+addrole` `+delrole`", inline=False).set_footer(text="Ton Bot • Préfixe actuel : +"),
+        discord.Embed(title="📋 Commandes disponibles", description="Préfixe : **+**", color=0x2b2d31).add_field(name="📊 Infos", value="`+serverinfo` `+ping` `+snipe`", inline=False).add_field(name="🎫 Autre", value="`+embed`", inline=False).set_footer(text="Ton Bot • Préfixe actuel : +"),
+    ]
+
+    class HelpView(discord.ui.View):
+        def __init__(self):
+            super().__init__(timeout=60)
+            self.page = 0
+
+        @discord.ui.button(emoji="◀️", style=discord.ButtonStyle.primary)
+        async def prev(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.page = (self.page - 1) % len(pages)
+            await interaction.response.edit_message(embed=pages[self.page], view=self)
+
+        @discord.ui.button(emoji="▶️", style=discord.ButtonStyle.primary)
+        async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.page = (self.page + 1) % len(pages)
+            await interaction.response.edit_message(embed=pages[self.page], view=self)
+
+    await ctx.send(embed=pages[0], view=HelpView())
 
 @bot.command()   
 @commands.has_permissions(manage_channels=True)
