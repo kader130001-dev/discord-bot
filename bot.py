@@ -312,5 +312,18 @@ async def unwarnall(ctx, member: discord.Member):
     embed.set_footer(text=f"Par {ctx.author}")
     await ctx.send(embed=embed)
     
+@bot.command()
+async def botinfo(ctx):
+    embed = discord.Embed(title="🤖 Informations sur le bot", color=0x2b2d31)
+    embed.add_field(name="📛 Nom", value=bot.user.name, inline=True)
+    embed.add_field(name="🆔 ID", value=bot.user.id, inline=True)
+    embed.add_field(name="🏓 Ping", value=f"{round(bot.latency * 1000)}ms", inline=True)
+    embed.add_field(name="🌍 Serveurs", value=len(bot.guilds), inline=True)
+    embed.add_field(name="👥 Membres", value=len(set(bot.get_all_members())), inline=True)
+    embed.add_field(name="📅 Créé le", value=bot.user.created_at.strftime("%d/%m/%Y"), inline=True)
+    embed.set_thumbnail(url=bot.user.display_avatar.url)
+    embed.set_footer(text=f"Demandé par {ctx.author}")
+    await ctx.send(embed=embed)
+    
 bot.run(os.environ["TOKEN"])
 
