@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 # ─────────────────────────────────────────
 #  CONFIG — MODIFIE ICI
 # ─────────────────────────────────────────
-TOKEN = "TON_TOKEN_ICI"
+TOKEN = os.getenv("DISCORD_TOKEN")
 PREFIX = "+"
 # ─────────────────────────────────────────
 
