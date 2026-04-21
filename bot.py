@@ -863,4 +863,63 @@ async def help(ctx):
 # ══════════════════════════════════════════
 #  LANCEMENT
 # ══════════════════════════════════════════
+
+import json
+import os
+
+# Charger/sauvegarder les données
+PERMS_FILE = "perms_data.json"
+
+def load_perms():
+    if os.path.exists(PERMS_FILE):
+        with open(PERMS_FILE, "r") as f:
+            return json.load(f)
+    return {
+        "Perm1": "Aucun", "Perm2": "Aucun", "Perm3": "Aucun",
+        "Perm4": "Aucun", "Perm5": "Aucun", "Perm6": "Aucun",
+        "Perm7": "Aucun", "Perm8": "Aucun", "Perm9": "Aucun"
+    }
+
+def save_perms(data):
+    with open(PERMS_FILE, "w") as f:
+        json.dump(data, f)
+
+# Commande +perms
+@bot.command(name="perms")
+async def perms(ctx):
+    data = load_perms()
+    description = ""
+    for perm, roles in data.items():
+        description += f"**{perm}**\n{roles}\n\n"
+
+    embed = discord.Embed(
+        title="🔐 Permissions du serveur",
+        description=description,
+        color=0x5865F2
+    )
+    embed.set_footer(text="Voir le +helpall pour voir les commandes auxquelles chaque permission donne accès")
+    await ctx.send(embed=embed)
+
+# Commande +set perms <perm> <@role>
+@bot.command(name="set")
+@commands.has_permissions(administrator=True)
+async def set_cmd(ctx, option: str, perm: str, *, roles: str):
+    if option.lower() != "perms":
+        return
+
+    data = load_perms()
+
+    if perm not in data:
+        await ctx.send(f"❌ `{perm}` est invalide. Utilise Perm1, Perm2... Perm9")
+        return
+
+    data[perm] = roles
+    save_perms(data)
+
+    embed = discord.Embed(
+        description=f"✅ **{perm}** mis à jour avec : {roles}",
+        color=0x57F287
+    )
+    await ctx.send(embed=embed)
+
 bot.run(TOKEN)
