@@ -17,7 +17,7 @@ def embed_error(description):
 
 class HelpView(discord.ui.View):
     def __init__(self):
-        super().__init__(timeout=60)
+        super().__init__(timeout=None)
         self.page = 0
         self.pages = [
             {
