@@ -849,7 +849,7 @@ async def info(ctx):
     await ctx.send(embed=embed)
 
 @bot.command(name="help")
-async def help(ctx):
+async def help2(ctx):
     embed = discord.Embed(title="🐦 Crow Bot — Aide", description=f"Préfixe : `{PREFIX}`", color=discord.Color.dark_red())
     embed.add_field(name="🎫 Tickets", value="`+ticket setup` `+ticketrole` `+ticketcategory`", inline=False)
     embed.add_field(name="🛡️ AntiRaid", value="`+secur` `+antitoken` `+antiban` `+antichannel` `+antirole` `+antieveryone` `+antiwebhook` `+punition` `+raidlog` `+clear_webhooks`", inline=False)
