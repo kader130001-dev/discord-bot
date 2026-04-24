@@ -4,11 +4,26 @@ from datetime import timedelta
 import asyncio
 import json
 import os
+import typing
 
-VIOLET = 0x9B59B6
-ROUGE = 0xE74C3C
 PERMS_FILE = "perms_data.json"
 BL_FILE = "blacklist.json"
+THEME_FILE = "theme.json"
+
+def load_theme():
+    if os.path.exists(THEME_FILE):
+        with open(THEME_FILE, "r") as f:
+            return json.load(f)
+    return {"color": 0x9B59B6}
+
+def save_theme(data):
+    with open(THEME_FILE, "w") as f:
+        json.dump(data, f)
+
+def get_color():
+    return load_theme().get("color", 0x9B59B6)
+
+ROUGE = 0xE74C3C
 
 def load_perms():
     if os.path.exists(PERMS_FILE):
@@ -33,13 +48,25 @@ def save_bl(data):
         json.dump(data, f)
 
 def embed_success(titre, description):
-    e = discord.Embed(title=f"✦ {titre}", description=f"```\n{description}\n```", color=VIOLET)
+    e = discord.Embed(title=f"✦ {titre}", description=f"```\n{description}\n```", color=get_color())
     e.set_footer(text="⬡ Système de Gestion")
     return e
 
 def embed_error(description):
     e = discord.Embed(title="✦ Erreur", description=f"```\n{description}\n```", color=ROUGE)
     return e
+
+THEMES = {
+    "violet": 0x9B59B6,
+    "bleu": 0x3498DB,
+    "rouge": 0xE74C3C,
+    "or": 0xF1C40F,
+    "vert": 0x2ECC71,
+    "rose": 0xFF69B4,
+    "orange": 0xE67E22,
+    "blanc": 0xFFFFFF,
+    "noir": 0x2C2F33,
+}
 
 class HelpView(discord.ui.View):
     def __init__(self):
@@ -73,14 +100,21 @@ class HelpView(discord.ui.View):
                     ("┌ +setperms [perm] [rôles]", "└ Modifier une permission"),
                     ("┌ +bl @membre [raison]", "└ Blacklist + ban un membre"),
                     ("┌ +unbl @membre", "└ Retire de la blacklist"),
-                    ("┌ +blinfo @membre", "└ Infos blacklist d'un membre"),
+                    ("┌ +blinfo @membre/ID", "└ Infos blacklist d'un membre"),
+                ]
+            },
+            {
+                "title": "✦ Aide — Paramètres",
+                "fields": [
+                    ("┌ +theme <couleur>", "└ Change la couleur des embeds"),
+                    ("┌ Couleurs disponibles :", "└ violet, bleu, rouge, or, vert, rose, orange, blanc, noir"),
                 ]
             },
         ]
 
     def build_embed(self):
         page = self.pages[self.page]
-        e = discord.Embed(title=page["title"], color=VIOLET)
+        e = discord.Embed(title=page["title"], color=get_color())
         for name, value in page["fields"]:
             e.add_field(name=name, value=value, inline=False)
         e.set_footer(text=f"⬡ Page {self.page + 1}/{len(self.pages)}")
@@ -106,6 +140,24 @@ class Gestion(commands.Cog):
     async def help(self, ctx):
         view = HelpView()
         await ctx.send(embed=view.build_embed(), view=view)
+
+    @commands.command(name="theme")
+    @commands.has_permissions(administrator=True)
+    async def theme(self, ctx, couleur: str):
+        couleur = couleur.lower()
+        if couleur not in THEMES:
+            liste = ", ".join(THEMES.keys())
+            await ctx.send(embed=embed_error(f"Couleur invalide !\n  Disponibles : {liste}"))
+            return
+        data = {"color": THEMES[couleur]}
+        save_theme(data)
+        e = discord.Embed(
+            title="✦ Thème mis à jour",
+            description=f"```\n  Couleur : {couleur}\n```",
+            color=THEMES[couleur]
+        )
+        e.set_footer(text="⬡ Système de Gestion")
+        await ctx.send(embed=e)
 
     @commands.command(name="clear")
     @commands.has_permissions(manage_messages=True)
@@ -204,7 +256,7 @@ class Gestion(commands.Cog):
     async def userinfo(self, ctx, membre: discord.Member = None):
         membre = membre or ctx.author
         roles = [r.mention for r in membre.roles[1:]]
-        e = discord.Embed(title=f"✦ Informations — {membre.name}", color=VIOLET)
+        e = discord.Embed(title=f"✦ Informations — {membre.name}", color=get_color())
         e.set_thumbnail(url=membre.display_avatar.url)
         e.add_field(name="┌ Identifiant", value=f"└ `{membre.id}`", inline=False)
         e.add_field(name="┌ Compte créé", value=f"└ `{membre.created_at.strftime('%d/%m/%Y')}`", inline=True)
@@ -219,7 +271,7 @@ class Gestion(commands.Cog):
         description = ""
         for perm, roles in data.items():
             description += f"**{perm}**\n{roles}\n\n"
-        e = discord.Embed(title="✦ Permissions du serveur", description=description, color=VIOLET)
+        e = discord.Embed(title="✦ Permissions du serveur", description=description, color=get_color())
         e.set_footer(text="⬡ Voir +help pour plus d'infos")
         await ctx.send(embed=e)
 
@@ -272,17 +324,19 @@ class Gestion(commands.Cog):
             await ctx.send(embed=embed_error(f"{membre.name} n'est pas dans la blacklist"))
 
     @commands.command(name="blinfo")
-    async def blinfo(self, ctx, membre: discord.Member):
+    async def blinfo(self, ctx, membre: typing.Union[discord.Member, int]):
         data = load_bl()
         guild_id = str(ctx.guild.id)
-        if guild_id in data and str(membre.id) in data[guild_id]:
-            info = data[guild_id][str(membre.id)]
+        membre_id = str(membre.id) if isinstance(membre, discord.Member) else str(membre)
+        membre_nom = membre.name if isinstance(membre, discord.Member) else f"ID: {membre}"
+        if guild_id in data and membre_id in data[guild_id]:
+            info = data[guild_id][membre_id]
             await ctx.send(embed=embed_success(
                 "Info Blacklist",
-                f"  Membre  : {membre.name}\n  Raison  : {info['raison']}\n  Par     : {info['par']}"
+                f"  Membre  : {info['nom']}\n  Raison  : {info['raison']}\n  Par     : {info['par']}"
             ))
         else:
-            await ctx.send(embed=embed_error(f"{membre.name} n'est pas dans la blacklist"))
+            await ctx.send(embed=embed_error(f"{membre_nom} n'est pas dans la blacklist"))
 
 async def setup(bot):
     await bot.add_cog(Gestion(bot))
