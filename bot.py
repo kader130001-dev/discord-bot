@@ -146,6 +146,7 @@ class TicketActionView(discord.ui.View):
 async def on_ready():
     bot.add_view(TicketSelectView())
     bot.add_view(TicketActionView())
+    await bot.load_extension("cogs.gestion")
     await bot.change_presence(activity=discord.Game(name="+help | Crow Bot"))
     print(f"✅ {bot.user} connecté.")
 
