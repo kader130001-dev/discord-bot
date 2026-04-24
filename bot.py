@@ -13,6 +13,8 @@ PREFIX = "+"
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
+bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all())
+bot.remove_command("help")  # ← ajoute ça
 
 # ══════════════════════════════════════════
 #  BASE DE DONNÉES JSON
