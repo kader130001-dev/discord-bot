@@ -2,9 +2,24 @@ import discord
 from discord.ext import commands
 from datetime import timedelta
 import asyncio
+import json
+import os
 
 VIOLET = 0x9B59B6
 ROUGE = 0xE74C3C
+PERMS_FILE = "perms_data.json"
+
+def load_perms():
+    if os.path.exists(PERMS_FILE):
+        with open(PERMS_FILE, "r") as f:
+            return json.load(f)
+    return {"Perm1": "Aucun", "Perm2": "Aucun", "Perm3": "Aucun",
+            "Perm4": "Aucun", "Perm5": "Aucun", "Perm6": "Aucun",
+            "Perm7": "Aucun", "Perm8": "Aucun", "Perm9": "Aucun"}
+
+def save_perms(data):
+    with open(PERMS_FILE, "w") as f:
+        json.dump(data, f)
 
 def embed_success(titre, description):
     e = discord.Embed(title=f"✦ {titre}", description=f"```\n{description}\n```", color=VIOLET)
@@ -51,13 +66,13 @@ class HelpView(discord.ui.View):
         e.set_footer(text=f"⬡ Page {self.page + 1}/{len(self.pages)}")
         return e
 
-    @discord.ui.button(label="◀", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="◀", style=discord.ButtonStyle.secondary, custom_id="help_prev")
     async def prev(self, interaction: discord.Interaction, button: discord.ui.Button):
         if self.page > 0:
             self.page -= 1
         await interaction.response.edit_message(embed=self.build_embed(), view=self)
 
-    @discord.ui.button(label="▶", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="▶", style=discord.ButtonStyle.secondary, custom_id="help_next")
     async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
         if self.page < len(self.pages) - 1:
             self.page += 1
@@ -165,6 +180,30 @@ class Gestion(commands.Cog):
         e.add_field(name=f"┌ Rôles ({len(roles)})", value="└ " + " ".join(roles) if roles else "└ Aucun", inline=False)
         e.set_footer(text=f"⬡ Demandé par {ctx.author.name}")
         await ctx.send(embed=e)
+
+    @commands.command(name="perms")
+    async def perms(self, ctx):
+        data = load_perms()
+        description = ""
+        for perm, roles in data.items():
+            description += f"**{perm}**\n{roles}\n\n"
+        e = discord.Embed(title="✦ Permissions du serveur", description=description, color=VIOLET)
+        e.set_footer(text="⬡ Voir +help pour plus d'infos")
+        await ctx.send(embed=e)
+
+    @commands.command(name="setperms")
+    @commands.has_permissions(administrator=True)
+    async def setperms(self, ctx, perm: str, *, roles: str):
+        data = load_perms()
+        if perm not in data:
+            await ctx.send(embed=embed_error(f"{perm} invalide. Utilise Perm1 à Perm9"))
+            return
+        data[perm] = roles
+        save_perms(data)
+        await ctx.send(embed=embed_success(
+            "Permissions mises à jour",
+            f"  {perm} → {roles}"
+        ))
 
 async def setup(bot):
     await bot.add_cog(Gestion(bot))
