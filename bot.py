@@ -15,7 +15,7 @@ async def on_ready():
         "cogs.utils",
         "cogs.logs",
         "cogs.tickets",
-        "cogs.antiraid"
+        "cogs.antiraid",
         "cogs.embed"
     ]
     for cog in COGS:
