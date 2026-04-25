@@ -595,5 +595,5 @@ class Gestion(commands.Cog):
         e.set_footer(text=f"⬡ Setup par {ctx.author.name}")
         await ctx.send(embed=e)
 
-async def setup_cog(bot):
-    await bot.add_cog(Tickets(bot))
+async def setup(bot):
+    await bot.add_cog(Gestion(bot))
