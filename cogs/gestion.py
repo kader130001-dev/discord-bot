@@ -559,6 +559,41 @@ class Gestion(commands.Cog):
             ))
         else:
             await ctx.send(embed=embed_error("Introuvable", f"`{membre_nom}` n'est pas dans la blacklist"))
+    @commands.command(name="setup")
+    @commands.has_permissions(administrator=True)
+    async def setup_server(self, ctx):
+        guild = ctx.guild
+        categorie = await guild.create_category("📋 LOGS")
+        salons_logs = {
+            "role": "role-logs",
+            "ticket": "ticket-logs",
+            "ban": "ban-logs",
+            "bl": "bl-logs"
+        }
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+        }
+        for role in guild.roles:
+            if role.permissions.administrator:
+                overwrites[role] = discord.PermissionOverwrite(read_messages=True)
+        data = load_logs()
+        guild_id = str(guild.id)
+        if guild_id not in data:
+            data[guild_id] = {}
+        for type_log, nom in salons_logs.items():
+            salon = await guild.create_text_channel(nom, category=categorie, overwrites=overwrites)
+            data[guild_id][type_log] = salon.id
+        save_logs(data)
+        e = discord.Embed(
+            title="✅  Setup terminé !",
+            description="Les salons de logs ont été créés et configurés automatiquement !",
+            color=VERT,
+            timestamp=datetime.utcnow()
+        )
+        e.add_field(name="📋 Catégorie", value="`📋 LOGS`", inline=False)
+        e.add_field(name="📌 Salons créés", value="`role-logs` • `ticket-logs` • `ban-logs` • `bl-logs`", inline=False)
+        e.set_footer(text=f"⬡ Setup par {ctx.author.name}")
+        await ctx.send(embed=e)
 
 async def setup(bot):
     await bot.add_cog(Gestion(bot))
